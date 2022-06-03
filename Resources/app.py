@@ -34,7 +34,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def welcome():
-    """List all available api routes."""
+    #List all available api routes.
     return (
         f"Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
@@ -47,22 +47,36 @@ def welcome():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
+
+    #Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
+    #Return the JSON representation of your dictionary.
+
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    # """Return a list of all precipitation measurements"""
+    # Return a list of all precipitation measurements
     # Query all measurements
-    prcp_results = session.query(Measurement.prcp).all()
+    prcp_results = session.query(Measurement.date, Measurement.prcp).all()
 
     session.close()
 
-    # Convert list of tuples into normal list
+    # Create a dictionary from the row data and append to a list of all_passengers
+    prcp_dict = []
+    for date, prcp in prcp_results:
+         prcp_dict = {}
+         prcp_dict["date"] = date
+         prcp_dict["prcp"] = prcp
+         all_prcp.append(prcp_dict)
+
     all_prcp = list(np.ravel(prcp_results))
 
     return jsonify(all_prcp)
 
 @app.route("/api/v1.0/stations")
 def stations():
+
+    # Return a JSON list of stations from the dataset.
+
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
@@ -79,10 +93,14 @@ def stations():
 
 @app.route("/api/v1.0/tobs")
 def tobs():
+
+    # Query the dates and temperature observations of the most active station for the last year of data.
+    # Return a JSON list of temperature observations (TOBS) for the previous year.
+
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    # """Return a list of all temperatures"""
+    # Return a list of all temperatures
     # Query all temperatures
     temp_results = session.query(Measurement.tobs).all()
 
