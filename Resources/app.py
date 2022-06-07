@@ -111,9 +111,6 @@ def tobs():
     
     return jsonify(most_active_list)
 
-    # Convert list of tuples into normal list
-    #all_temps = list(np.ravel(temp_results))
-
     
 
 @app.route("/api/v1.0/temp/<start>")
