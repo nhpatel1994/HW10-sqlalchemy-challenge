@@ -73,13 +73,12 @@ def stations():
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    # """Return a list of all station names"""
-    # # Query all stations
-    name_results = session.query(Measurement.station).all()
-
+    # Query all stations
+    name_results = session.query(Station.station).all()
+    
     session.close()
 
-    # # Convert list of tuples into normal list
+    # Convert list of tuples into normal list
     all_station_names = list(np.ravel(name_results))
 
     return jsonify(all_station_names)
@@ -93,17 +92,29 @@ def tobs():
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    # Return a list of all temperatures
     # Query all temperatures
-    temp_results = session.query(Measurement.tobs).all()
+    most_active_station = session.query(Measurement.station, Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281')
+    
+
+    #temp_results = session.query(Measurement.tobs).all()
 
     session.close()
 
+    most_active_list = []
+    for station, date, prcp in most_active_station:
+         most_active_dict = {}
+         most_active_dict["station"] = station
+         most_active_dict["date"] = date
+         most_active_dict["prcp"] = prcp
+         most_active_list.append(most_active_dict)
+    
+    
+    return jsonify(most_active_list)
+
     # Convert list of tuples into normal list
-    all_temps = list(np.ravel(temp_results))
+    #all_temps = list(np.ravel(temp_results))
 
-    return jsonify(all_temps)
-
+    
 
 @app.route("/api/v1.0/temp/<start>")
 def temp_start(start):
