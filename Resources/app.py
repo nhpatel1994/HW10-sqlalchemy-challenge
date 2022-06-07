@@ -7,14 +7,12 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-
-#################################################
 # Database Setup
-#################################################
 engine = create_engine("sqlite:///hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
+
 # reflect the tables
 Base.prepare(engine, reflect=True)
 
@@ -22,15 +20,10 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
-#################################################
 # Flask Setup
-#################################################
 app = Flask(__name__)
 
-
-#################################################
 # Flask Routes
-#################################################
 
 @app.route("/")
 def welcome():
@@ -60,15 +53,15 @@ def precipitation():
 
     session.close()
 
-    # Create a dictionary from the row data and append to a list of all_passengers
-    prcp_dict = []
+    # Create a dictionary with date and associated precpitation measurement
+    all_prcp = []
     for date, prcp in prcp_results:
          prcp_dict = {}
          prcp_dict["date"] = date
          prcp_dict["prcp"] = prcp
          all_prcp.append(prcp_dict)
 
-    all_prcp = list(np.ravel(prcp_results))
+    #all_prcp = list(np.ravel(prcp_results))
 
     return jsonify(all_prcp)
 
