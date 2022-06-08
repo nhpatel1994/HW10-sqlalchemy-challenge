@@ -115,50 +115,43 @@ def tobs():
 
 @app.route("/api/v1.0/temp/<start>")
 def temp_start(start):
+
+    # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start date.
+    # When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
+
     # Create our session (link) from Python to the DB
     session = Session(engine)
+    
+    # Query 
 
-    return ''
+    after_start_date = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).all()
 
-    # """Return a list of passenger data including the name, age, and sex of each passenger"""
-    # # Query all passengers
-    # results = session.query(Passenger.name, Passenger.age, Passenger.sex).all()
+    session.close()
 
-    # session.close()
+    list = []
+    for row in after_start_date:
+        list.append([x for x in row])
 
-    # # Create a dictionary from the row data and append to a list of all_passengers
-    # all_passengers = []
-    # for name, age, sex in results:
-    #     passenger_dict = {}
-    #     passenger_dict["name"] = name
-    #     passenger_dict["age"] = age
-    #     passenger_dict["sex"] = sex
-    #     all_passengers.append(passenger_dict)
-
-    # return jsonify(all_passengers)
+    return jsonify(list)
 
 @app.route("/api/v1.0/temp/<start>/<end>")
 def temp_start_to_end(start, end):
+
+    # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start-end range.
+    # When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
+
     # Create our session (link) from Python to the DB
     session = Session(engine)
+    
+    between_start_end = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
 
-    return ''
-    # """Return a list of passenger data including the name, age, and sex of each passenger"""
-    # # Query all passengers
-    # results = session.query(Passenger.name, Passenger.age, Passenger.sex).all()
+    session.close()
 
-    # session.close()
+    list = []
+    for row in between_start_end:
+        list.append([x for x in row])
 
-    # # Create a dictionary from the row data and append to a list of all_passengers
-    # all_passengers = []
-    # for name, age, sex in results:
-    #     passenger_dict = {}
-    #     passenger_dict["name"] = name
-    #     passenger_dict["age"] = age
-    #     passenger_dict["sex"] = sex
-    #     all_passengers.append(passenger_dict)
-
-    # return jsonify(all_passengers)
+    return jsonify(list)
 
 
 if __name__ == '__main__':
